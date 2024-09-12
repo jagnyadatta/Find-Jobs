@@ -70,7 +70,7 @@ export const login = async (req, res) => {
     }
     //token data
     const tokenData = {
-      userid: user._id,
+      userId: user._id,
     };
     const token = await jwt.sign(tokenData, process.env.SECRET_KEY, {
       expiresIn: "1d",
@@ -125,10 +125,10 @@ export const updateProfile = async (req, res) => {
 
     let skillsArray;
     if(skills){
-      const skillsArray = skills.split(",");
+      skillsArray = skills.split(",");
     }
     const userId = req.id; // id will comes by middleware
-    let user = await User.findOne(userId);
+    let user = await User.findById(userId);
     if (!user) {
       return res.status(400).json({
         message: "User not found.",
