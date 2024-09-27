@@ -16,7 +16,7 @@ const LatestJobCards = () => {
                 <Badge className={'text-blue-700 font-bold'} variant="ghost">12 Positions</Badge>
                 <Badge className={'text-[#04c40a] font-bold'} variant="ghost">FullTime</Badge>
                 <Badge className={'text-[#F83002] font-bold'} variant="ghost">11LPA</Badge>
-            </div>
+        </div>
 
     </div>
   )
