@@ -77,6 +77,13 @@ button:focus-visible {
     --chart-5: 340 75% 55%;
   }
 }
+@media (prefers-color-scheme: dark) {
+  input[type="radio"] {
+    background-color: none; /* Or other black color */
+    /* width: 10px;
+    height: 20px */
+  }
+}
 
 @layer base {
   * {

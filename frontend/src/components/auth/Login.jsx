@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { USER_API_END_POINT } from "@/utils/constant";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading } from "@/redux/authSlice";
+import { setLoading, setUser } from "@/redux/authSlice";
 import { Loader2 } from "lucide-react";
 
 const Login = () => {
@@ -35,6 +35,7 @@ const Login = () => {
         withCredentials: true,
       });
       if (res.data.success) {
+        dispatch(setUser(res.data.user));
         navigate("/");
         toast.success(res.data.message);
       }
@@ -82,7 +83,8 @@ const Login = () => {
                   value="student"
                   checked={input.role === "student"}
                   onChange={changeEventHandler}
-                  className="cursor-pointer"
+                  
+                  className="cursor-pointer form-radio h-2 w-2 text-blue-600 border-black-2"
                 />
                 <Label htmlFor="r1">Student</Label>
               </div>
@@ -93,7 +95,7 @@ const Login = () => {
                   checked={input.role === "recruiter"}
                   onChange={changeEventHandler}
                   value="recruiter"
-                  className="cursor-pointer"
+                  className="cursor-pointer form-radio h-2 w-2 text-blue-600 border-black-1"
                 />
                 <Label htmlFor="r2">Recruiter</Label>
               </div>
