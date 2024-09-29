@@ -17,11 +17,10 @@ const HeroSection = () => {
                     <input
                         type="text"
                         placeholder='Find your dream jobs'
-                        className='outline-none border-none w-full'
-
+                        className='outline-none border-none focus:ring-0 w-full rounded-full'
                     />
                     <Button className="rounded-r-full bg-[#04c40a]">
-                        <Search className='h-5 w-5' />
+                        <Search className='h-5 w-5 ' />
                     </Button>
                 </div>
       </div>
