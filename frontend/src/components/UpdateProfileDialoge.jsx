@@ -24,6 +24,13 @@ const UpdateProfileDialoge = ({ open, setOpen }) => {
         skills: user?.profile?.skills?.map(skill => skill) || "",
         file: user?.profile?.resume || ""
     });
+    const changeEventHandler = (e)=>{
+      setInput({...input, [e.target.name]: e.target.value});
+    }
+    const submitHandler = (e) =>{
+      e.preventDefault();
+      console.log(input);
+    }
   return (
     <div>
       <Dialog open={open}>
@@ -34,37 +41,37 @@ const UpdateProfileDialoge = ({ open, setOpen }) => {
           <DialogHeader>
             <DialogTitle>Update Profile</DialogTitle>
           </DialogHeader>
-          <form action="">
+          <form onSubmit={submitHandler}>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="name" className="text-right">
                   Name:
                 </Label>
-                <Input id="name" name="name" value={input.fullname} className="col-span-3" />
+                <Input id="name" type="text" name="name" onChange={changeEventHandler} value={input.fullname} className="col-span-3" />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="email" className="text-right">
                   Email:
                 </Label>
-                <Input id="email" name="email" value={input.email} className="col-span-3" />
+                <Input id="email" type="email" name="email" onChange={changeEventHandler} value={input.email} className="col-span-3" />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="number" className="text-right">
                   Number:
                 </Label>
-                <Input id="number" name="number" value={input.phoneNumber} className="col-span-3" />
+                <Input id="number" type="number" name="number" onChange={changeEventHandler} value={input.phoneNumber} className="col-span-3" />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="bio" className="text-right">
                   Bio:
                 </Label>
-                <Input id="bio" name="bio" value={input.bio} className="col-span-3" />
+                <Input id="bio" name="bio" onChange={changeEventHandler} value={input.bio} className="col-span-3" />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="skills" className="text-right">
                   Skills:
                 </Label>
-                <Input id="skills" name="skills" value={input.skills} className="col-span-3" />
+                <Input id="skills" name="skills" onChange={changeEventHandler} value={input.skills} className="col-span-3" />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="file" className="text-right">
@@ -74,7 +81,6 @@ const UpdateProfileDialoge = ({ open, setOpen }) => {
                   id="file"
                   name="file"
                   type="file"
-                  value={input.fullname}
                   accept="application/pdf"
                   className="col-span-3"
                 />
