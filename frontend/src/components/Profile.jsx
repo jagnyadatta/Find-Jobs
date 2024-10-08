@@ -39,8 +39,7 @@ const Profile = () => {
             <div>
               <h1 className="font-medium text-xl">{user?.fullname}</h1>
               <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Consectetur, nobis?
+                {user?.profile?.bio}
               </p>
             </div>
           </div>
@@ -73,10 +72,10 @@ const Profile = () => {
           {isResume ? (
             <a
               target="blank"
-              href="https://www.youtube.com"
+              href={user?.profile?.resume}
               className="text-blue-500 w-full hover:underline cursor-pointer"
             >
-              Demo Resume
+              {user?.profile?.resumeOriginalName}
             </a>
           ) : (
             <span>NA</span>
