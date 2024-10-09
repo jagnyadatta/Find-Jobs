@@ -32,7 +32,7 @@ const Profile = () => {
           <div className="flex items-center gap-4">
             <Avatar className="h-24 w-24">
               <AvatarImage
-                src="https://via.placeholder.com/150"
+                src={user?.profile?.profilePhoto}
                 alt="Profile Photo"
               />
             </Avatar>
