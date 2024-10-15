@@ -4,19 +4,20 @@ import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import CompaniesTable from './CompaniesTable'
 import { useNavigate } from 'react-router-dom'
-// import useGetAllCompanies from '@/hooks/useGetAllCompanies'
-// import { useDispatch } from 'react-redux'
-// import { setSearchCompanyByText } from '@/redux/companySlice'
+import useGetAllCompanies from '@/hooks/useGetAllCompanies'
+import { useDispatch } from 'react-redux'
+import { setSearchCompanyByText } from '@/redux/companySlice'
+
 
 const Companies = () => {
-    // useGetAllCompanies();
-    // const [input, setInput] = useState("");
+    useGetAllCompanies();
+    const [input, setInput] = useState("");
     const navigate = useNavigate();
-    // const dispatch = useDispatch();
+    const dispatch = useDispatch();
 
-    // useEffect(()=>{
-    //     dispatch(setSearchCompanyByText(input));
-    // },[input]);
+    useEffect(()=>{
+        dispatch(setSearchCompanyByText(input));
+    },[input]);
     return (
         <div>
             <Navbar />
@@ -25,7 +26,7 @@ const Companies = () => {
                     <Input
                         className="w-fit"
                         placeholder="Filter by name"
-                        // onChange={(e) => setInput(e.target.value)}
+                        onChange={(e) => setInput(e.target.value)}
                     />
                     <Button onClick={() => navigate("/admin/companies/create")}>New Company</Button>
                 </div>
