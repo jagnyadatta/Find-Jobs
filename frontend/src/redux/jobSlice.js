@@ -5,8 +5,8 @@ const jobSlice = createSlice({
     initialState:{
         allJobs:[],
         singleJob: null,
-        // allAdminJobs:[],
-        // searchJobByText:"",
+        allAdminJobs:[],
+        searchJobByText:"",
         // allAppliedJobs:[],
         // searchedQuery:"",
     },
@@ -18,12 +18,12 @@ const jobSlice = createSlice({
         setSingleJob:(state,action) => {
             state.singleJob = action.payload;
         },
-        // setAllAdminJobs:(state,action) => {
-        //     state.allAdminJobs = action.payload;
-        // },
-        // setSearchJobByText:(state,action) => {
-        //     state.searchJobByText = action.payload;
-        // },
+        setAllAdminJobs:(state,action) => {
+            state.allAdminJobs = action.payload;
+        },
+        setSearchJobByText:(state,action) => {
+            state.searchJobByText = action.payload;
+        },
         // setAllAppliedJobs:(state,action) => {
         //     state.allAppliedJobs = action.payload;
         // },
@@ -35,8 +35,8 @@ const jobSlice = createSlice({
 export const {
     setAllJobs, 
     setSingleJob,
-    // setAllAdminJobs,
-    // setSearchJobByText, 
+    setAllAdminJobs,
+    setSearchJobByText, 
     // setAllAppliedJobs,
     // setSearchedQuery
 } = jobSlice.actions;
