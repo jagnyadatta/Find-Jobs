@@ -28,7 +28,7 @@ const Companies = () => {
                         placeholder="Filter by name"
                         onChange={(e) => setInput(e.target.value)}
                     />
-                    <Button onClick={() => navigate("/admin/companies/create")}>New Company</Button>
+                    <Button className="bg-[#0279e8] hover:bg-[#055199] outline:none" onClick={() => navigate("/admin/companies/create")}>New Company</Button>
                 </div>
                 <CompaniesTable/>
             </div>

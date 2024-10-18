@@ -57,7 +57,7 @@ const CompanyCreate = () => {
           >
             Cancel
           </Button>
-          <Button onClick={registerNewCompany}>Continue</Button>
+          <Button onClick={registerNewCompany} className="my-4 bg-[#04c40a] hover:bg-[#2a8212] outline:none">Continue</Button>
         </div>
       </div>
     </div>
