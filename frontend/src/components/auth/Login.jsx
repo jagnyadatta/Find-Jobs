@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../shared/Navbar";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -18,7 +18,7 @@ const Login = () => {
     password: "",
     role: "",
   });
-  const { loading } = useSelector((store) => store.auth);
+  const { loading, user } = useSelector((store) => store.auth);
   const navigate = new useNavigate();
   const dispatch = useDispatch();
   const changeEventHandler = (e) => {
@@ -45,6 +45,11 @@ const Login = () => {
       dispatch(setLoading(false));
     }
   };
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, []);
   return (
     <div>
       <Navbar />
@@ -83,7 +88,6 @@ const Login = () => {
                   value="student"
                   checked={input.role === "student"}
                   onChange={changeEventHandler}
-                  
                   className="cursor-pointer form-radio h-2 w-2 text-blue-600 border-black-2"
                 />
                 <Label htmlFor="r1">Student</Label>
