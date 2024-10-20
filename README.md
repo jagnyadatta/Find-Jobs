@@ -1,5 +1,6 @@
 # Find-Jobs
 <b>FindJob</b> is a full-stack web application built using the MERN stack (<b>MongoDB, Express.js, React.js, Node.js</b>). This platform allows users to search, apply, and manage job applications efficiently. It provides a seamless interface for both job seekers and recruiters, featuring functionalities like user authentication, job listings, Job apply and Job Status check and admin can will post job and modify the status of applicants. The project is designed to help users find and apply for their dream jobs with ease.<br>
+<h5>Deployed site:- https://find-jobs-bv56.onrender.com/ </h5>
 <h3>Home Page</h3>
 <img src="https://github.com/user-attachments/assets/e8b1b553-ca88-495a-aefd-3ceea709cdb7">
 <h3>Login Page</h3>
