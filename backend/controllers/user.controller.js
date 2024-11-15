@@ -14,6 +14,15 @@ export const register = async (req, res) => {
         success: false,
       });
     }
+
+    // Gmail validation
+    if (!email.endsWith("@gmail.com")) {
+      return res.status(400).json({
+        message: "Only @gmail.com email addresses are allowed.",
+        success: false,
+      });
+    }
+
     const file = req.file;
     const fileUri = getDataUri(file);
     const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
@@ -127,6 +136,14 @@ export const updateProfile = async (req, res) => {
   try {
     const { fullname, email, phoneNumber, bio, skills } = req.body;
     const file = req.file;
+
+    // Gmail validation
+    if (!email.endsWith("@gmail.com")) {
+      return res.status(400).json({
+        message: "Only @gmail.com email addresses are allowed.",
+        success: false,
+      });
+    }
 
     //cloudinary file will comes here
     const fileUri = getDataUri(file);

@@ -32,6 +32,12 @@ const Signup = () => {
   };
   const submitHandler = async (e) => {
     e.preventDefault();
+    //Gmail validation 
+    if (!input.email.endsWith("@gmail.com")) {
+      toast.error("Only @gmail.com email addresses are allowed.");
+      return; // Stop form submission if validation fails
+    }
+    
     const formData = new FormData();
     formData.append("fullname", input.fullname);
     formData.append("email", input.email);
