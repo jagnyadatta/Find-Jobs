@@ -34,6 +34,14 @@ const userSchema = new mongoose.Schema(
         default: "",
       },
     },
+    otp: {
+      type: String,  // Stores the OTP sent to the user
+      required: false, // OTP is not always needed
+    },
+    otpExpiry: {
+      type: Date, // Stores the expiry time of the OTP
+      required: false, // OTP expiry is not always set
+    },
   },
   { timestamps: true }
 );

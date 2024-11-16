@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { USER_API_END_POINT } from "@/utils/constant";
+import { OTP_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "@/redux/authSlice";
@@ -20,24 +21,79 @@ const Signup = () => {
     password: "",
     role: "",
     file: "",
+    otp: "", // Added state for OTP input
   });
+  const [otpSent, setOtpSent] = useState(false); // Track if OTP is sent
+  const [otpVerified, setOtpVerified] = useState(false); // Track OTP verification status
   const { loading, user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
   const changeFileHandler = (e) => {
     setInput({ ...input, file: e.target.files?.[0] });
   };
+
+  // Send OTP function
+  const sendOtp = async () => {
+    if (!input.email) {
+      toast.error("Please enter your email.");
+      return;
+    }
+
+    try {
+      const res = await axios.post(`${OTP_API_END_POINT}/send-otp`, {
+        email: input.email,
+      });
+      if (res.data.success) {
+        toast.success("OTP sent to your email.");
+        setOtpSent(true);
+      } else {
+        toast.error(res.data.message || "Failed to send OTP.");
+      }
+    } catch (error) {
+      toast.error(error.response.data.message || "Something went wrong.");
+    }
+  };
+
+  // Verify OTP function
+  const verifyOtp = async () => {
+    if (!input.otp) {
+      toast.error("Please enter the OTP.");
+      return;
+    }
+
+    try {
+      const res = await axios.post(`${OTP_API_END_POINT}/verify-otp`, {
+        email: input.email,
+        otp: input.otp,
+      });
+      if (res.data.success) {
+        toast.success("OTP verified successfully!");
+        setOtpVerified(true);
+      } else {
+        toast.error(res.data.message || "Invalid OTP.");
+      }
+    } catch (error) {
+      toast.error(error.response.data.message || "Something went wrong.");
+    }
+  };
+
   const submitHandler = async (e) => {
     e.preventDefault();
-    //Gmail validation 
+    // Gmail validation
     if (!input.email.endsWith("@gmail.com")) {
       toast.error("Only @gmail.com email addresses are allowed.");
       return; // Stop form submission if validation fails
     }
-    
+
+    if (!otpVerified) {
+      toast.error("Please verify the OTP before proceeding.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("fullname", input.fullname);
     formData.append("email", input.email);
@@ -47,6 +103,7 @@ const Signup = () => {
     if (input.file) {
       formData.append("file", input.file);
     }
+
     try {
       dispatch(setLoading(true));
       const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
@@ -65,11 +122,13 @@ const Signup = () => {
       dispatch(setLoading(false));
     }
   };
+
   useEffect(() => {
     if (user) {
       navigate("/");
     }
   }, []);
+
   return (
     <div>
       <Navbar />
@@ -99,6 +158,40 @@ const Signup = () => {
               placeholder="demo123@gmail.com"
             />
           </div>
+
+          {/* Added Send OTP Button */}
+          <div className="my-2">
+            <Button
+              type="button"
+              onClick={sendOtp}
+              disabled={loading}
+              className="bg-blue-600 text-white w-full mt-2"
+            >
+              {loading ? "Sending OTP..." : "Send OTP"}
+            </Button>
+          </div>
+
+          {/* OTP Input Field */}
+          {otpSent && (
+            <div className="my-2">
+              <Label>OTP</Label>
+              <Input
+                type="text"
+                value={input.otp}
+                name="otp"
+                onChange={changeEventHandler}
+                placeholder="Enter OTP"
+              />
+              <Button
+                type="button"
+                onClick={verifyOtp}
+                className="bg-green-600 text-white w-full mt-2"
+              >
+                Verify OTP
+              </Button>
+            </div>
+          )}
+
           <div className="my-2">
             <Label>Phone No</Label>
             <Input
