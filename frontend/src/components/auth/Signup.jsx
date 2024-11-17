@@ -6,8 +6,7 @@ import { RadioGroup } from "../ui/radio-group";
 import { Button } from "../ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { USER_API_END_POINT } from "@/utils/constant";
-import { OTP_API_END_POINT } from "@/utils/constant";
+import { USER_API_END_POINT, OTP_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "@/redux/authSlice";
@@ -21,10 +20,10 @@ const Signup = () => {
     password: "",
     role: "",
     file: "",
-    otp: "", // Added state for OTP input
+    otp: "",
   });
-  const [otpSent, setOtpSent] = useState(false); // Track if OTP is sent
-  const [otpVerified, setOtpVerified] = useState(false); // Track OTP verification status
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
   const { loading, user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -32,17 +31,16 @@ const Signup = () => {
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
+
   const changeFileHandler = (e) => {
     setInput({ ...input, file: e.target.files?.[0] });
   };
 
-  // Send OTP function
   const sendOtp = async () => {
     if (!input.email) {
       toast.error("Please enter your email.");
       return;
     }
-
     try {
       const res = await axios.post(`${OTP_API_END_POINT}/send-otp`, {
         email: input.email,
@@ -54,17 +52,15 @@ const Signup = () => {
         toast.error(res.data.message || "Failed to send OTP.");
       }
     } catch (error) {
-      toast.error(error.response.data.message || "Something went wrong.");
+      toast.error(error.response?.data?.message || "Something went wrong.");
     }
   };
 
-  // Verify OTP function
   const verifyOtp = async () => {
     if (!input.otp) {
       toast.error("Please enter the OTP.");
       return;
     }
-
     try {
       const res = await axios.post(`${OTP_API_END_POINT}/verify-otp`, {
         email: input.email,
@@ -77,20 +73,19 @@ const Signup = () => {
         toast.error(res.data.message || "Invalid OTP.");
       }
     } catch (error) {
-      toast.error(error.response.data.message || "Something went wrong.");
+      toast.error(error.response?.data?.message || "Something went wrong.");
     }
   };
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    // Gmail validation
-    if (!input.email.endsWith("@gmail.com")) {
-      toast.error("Only @gmail.com email addresses are allowed.");
-      return; // Stop form submission if validation fails
-    }
-
     if (!otpVerified) {
       toast.error("Please verify the OTP before proceeding.");
+      return;
+    }
+
+    if (!input.email.endsWith("@gmail.com")) {
+      toast.error("Only @gmail.com email addresses are allowed.");
       return;
     }
 
@@ -117,7 +112,7 @@ const Signup = () => {
         toast.success(res.data.message);
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Registration failed.");
     } finally {
       dispatch(setLoading(false));
     }
@@ -127,7 +122,7 @@ const Signup = () => {
     if (user) {
       navigate("/");
     }
-  }, []);
+  }, [user]);
 
   return (
     <div>
@@ -157,21 +152,11 @@ const Signup = () => {
               onChange={changeEventHandler}
               placeholder="demo123@gmail.com"
             />
-          </div>
-
-          {/* Added Send OTP Button */}
-          <div className="my-2">
-            <Button
-              type="button"
-              onClick={sendOtp}
-              disabled={loading}
-              className="bg-blue-600 text-white w-full mt-2"
-            >
+            <Button type="button" onClick={sendOtp} className="mt-2 w-full">
               {loading ? "Sending OTP..." : "Send OTP"}
             </Button>
           </div>
 
-          {/* OTP Input Field */}
           {otpSent && (
             <div className="my-2">
               <Label>OTP</Label>
@@ -185,7 +170,7 @@ const Signup = () => {
               <Button
                 type="button"
                 onClick={verifyOtp}
-                className="bg-green-600 text-white w-full mt-2"
+                className="bg-green-600 w-full mt-2"
               >
                 Verify OTP
               </Button>
@@ -212,59 +197,19 @@ const Signup = () => {
               placeholder="**********"
             />
           </div>
-          <div className="flex items-center justify-between">
-            <RadioGroup className="flex items-center gap-4 my-5">
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="radio"
-                  name="role"
-                  value="student"
-                  checked={input.role === "student"}
-                  onChange={changeEventHandler}
-                  className="cursor-pointer form-radio h-2 w-2 text-blue-600 border-black-1"
-                />
-                <Label htmlFor="r1">Student</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="radio"
-                  name="role"
-                  checked={input.role === "recruiter"}
-                  onChange={changeEventHandler}
-                  value="recruiter"
-                  className="cursor-pointer form-radio h-2 w-2 text-blue-600 border-black-1"
-                />
-                <Label htmlFor="r2">Recruiter</Label>
-              </div>
-            </RadioGroup>
-            <div className="flex items-center gap-2">
-              <Label>Profile</Label>
-              <Input
-                accept="image/*"
-                onChange={changeFileHandler}
-                type="file"
-                className="cursor-pointer"
-              />
-            </div>
-          </div>
-          {loading ? (
-            <Button className="w-full my-4 bg-[#04c40a] hover:bg-[#2a8212] outline:none">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait !
-            </Button>
-          ) : (
-            <Button
-              type="submit"
-              className="w-full my-4 bg-[#04c40a] hover:bg-[#2a8212] outline:none"
-            >
-              Signup
-            </Button>
-          )}
-          <span className="text-sm">
-            Already have an account?{" "}
-            <Link to="/login" className="text-blue-600">
-              Login
-            </Link>
-          </span>
+          <RadioGroup>
+            {/* Radio buttons */}
+          </RadioGroup>
+          <Button
+            type="submit"
+            className="w-full my-4 bg-[#04c40a] hover:bg-[#2a8212]"
+          >
+            {loading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              "Signup"
+            )}
+          </Button>
         </form>
       </div>
     </div>
