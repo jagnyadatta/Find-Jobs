@@ -3,11 +3,11 @@ const userSchema = new mongoose.Schema(
   {
     fullname: {
       type: String,
-      required: true,
+      required: false,
     },
     email: {
       type: String,
-      required: true,
+      required: false,
       unique: true,
     },
     phoneNumber: {
