@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../shared/Navbar";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -20,9 +20,10 @@ const Signup = () => {
     password: "",
     role: "",
     file: "",
-    otp: "", // State for OTP
+    otp: "", // State for OTP input
   });
-  const [isOTPRequested, setIsOTPRequested] = useState(false); // State to check if OTP has been sent
+  const [isOTPRequested, setIsOTPRequested] = useState(false); // State to track OTP request
+  const [isOTPVerified, setIsOTPVerified] = useState(false); // State to track OTP verification
   const { loading, user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -30,26 +31,26 @@ const Signup = () => {
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
+
   const changeFileHandler = (e) => {
     setInput({ ...input, file: e.target.files?.[0] });
   };
 
-  // Submit form to send OTP first
-  const submitHandler = async (e) => {
+  // Function to send OTP to email
+  const sendOTPHandler = async (e) => {
     e.preventDefault();
     if (!input.email.endsWith("@gmail.com")) {
       toast.error("Only @gmail.com email addresses are allowed.");
-      return; // Stop form submission if validation fails
+      return; // Stop if email is not Gmail
     }
     
     try {
       dispatch(setLoading(true));
-      // First, request OTP for the email
       const otpRes = await axios.post(
         `${OTP_API_END_POINT}/send-otp`, 
         { email: input.email }
       );
-
+      
       if (otpRes.data.success) {
         setIsOTPRequested(true); // Mark OTP as requested
         toast.success("OTP sent to your email. Please check your inbox.");
@@ -63,47 +64,60 @@ const Signup = () => {
     }
   };
 
-  // Verify OTP and complete registration
+  // Function to verify OTP
   const verifyOTPHandler = async (e) => {
     e.preventDefault();
 
     try {
       dispatch(setLoading(true));
-      // Send OTP for verification
       const verifyRes = await axios.post(
         `${OTP_API_END_POINT}/verify-otp`,
         { email: input.email, otp: input.otp }
       );
 
       if (verifyRes.data.success) {
-        // If OTP is verified successfully, register the user
-        const formData = new FormData();
-        formData.append("fullname", input.fullname);
-        formData.append("email", input.email);
-        formData.append("phoneNumber", input.phoneNumber);
-        formData.append("password", input.password);
-        formData.append("role", input.role);
-        if (input.file) {
-          formData.append("file", input.file);
-        }
-
-        // Register the user
-        const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        });
-
-        if (res.data.success) {
-          navigate("/login");
-          toast.success(res.data.message);
-        }
+        setIsOTPVerified(true); // Mark OTP as verified
+        toast.success("OTP verified successfully. You can now fill the form.");
       } else {
         toast.error("Invalid OTP. Please try again.");
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "An error occurred.");
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+  // Submit form after OTP verification
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    if (!isOTPVerified) {
+      toast.error("Please verify the OTP first.");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("fullname", input.fullname);
+    formData.append("email", input.email);
+    formData.append("phoneNumber", input.phoneNumber);
+    formData.append("password", input.password);
+    formData.append("role", input.role);
+    if (input.file) {
+      formData.append("file", input.file);
+    }
+    try {
+      dispatch(setLoading(true));
+      const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
+      });
+      if (res.data.success) {
+        navigate("/login");
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
     } finally {
       dispatch(setLoading(false));
     }
@@ -120,33 +134,68 @@ const Signup = () => {
       <Navbar />
       <div className="flex items-center justify-center max-w-7xl mx-auto">
         <form
-          onSubmit={isOTPRequested ? verifyOTPHandler : submitHandler}
+          onSubmit={submitHandler}
           className="w-1/2 border border-gray-200 rounded-md p-4 my-10"
         >
           <h1 className="font-bold text-xl mb-5">Sign Up</h1>
 
-          {!isOTPRequested ? (
-            <>
-              <div className="my-2">
-                <Label>Full Name</Label>
+          <div className="my-2">
+            <Label>Full Name</Label>
+            <Input
+              type="text"
+              value={input.fullname}
+              name="fullname"
+              onChange={changeEventHandler}
+              placeholder="Jagnyadatta Dalai"
+            />
+          </div>
+
+          <div className="my-2">
+            <Label>Email</Label>
+            <div className="flex items-center">
+              <Input
+                type="email"
+                value={input.email}
+                name="email"
+                onChange={changeEventHandler}
+                placeholder="demo123@gmail.com"
+                className="flex-1"
+              />
+              <Button
+                type="button"
+                onClick={sendOTPHandler}
+                className="ml-2 bg-blue-600 text-white"
+              >
+                Send OTP
+              </Button>
+            </div>
+          </div>
+
+          {isOTPRequested && (
+            <div className="my-2">
+              <Label>Enter OTP</Label>
+              <div className="flex items-center">
                 <Input
                   type="text"
-                  value={input.fullname}
-                  name="fullname"
+                  value={input.otp}
+                  name="otp"
                   onChange={changeEventHandler}
-                  placeholder="Jagnyadatta Dalai"
+                  placeholder="Enter OTP"
+                  className="flex-1"
                 />
+                <Button
+                  type="button"
+                  onClick={verifyOTPHandler}
+                  className="ml-2 bg-green-600 text-white"
+                >
+                  Verify OTP
+                </Button>
               </div>
-              <div className="my-2">
-                <Label>Email</Label>
-                <Input
-                  type="email"
-                  value={input.email}
-                  name="email"
-                  onChange={changeEventHandler}
-                  placeholder="demo123@gmail.com"
-                />
-              </div>
+            </div>
+          )}
+
+          {isOTPVerified && (
+            <>
               <div className="my-2">
                 <Label>Phone No</Label>
                 <Input
@@ -203,19 +252,6 @@ const Signup = () => {
                 </div>
               </div>
             </>
-          ) : (
-            <>
-              <div className="my-2">
-                <Label>Enter OTP</Label>
-                <Input
-                  type="text"
-                  value={input.otp}
-                  name="otp"
-                  onChange={changeEventHandler}
-                  placeholder="Enter OTP"
-                />
-              </div>
-            </>
           )}
 
           {loading ? (
@@ -227,9 +263,10 @@ const Signup = () => {
               type="submit"
               className="w-full my-4 bg-[#04c40a] hover:bg-[#2a8212] outline:none"
             >
-              {isOTPRequested ? "Verify OTP" : "Signup"}
+              Signup
             </Button>
           )}
+
           <span className="text-sm">
             Already have an account?{" "}
             <Link to="/login" className="text-blue-600">
