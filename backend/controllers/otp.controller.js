@@ -8,6 +8,12 @@ export const sendOtp = async (req, res) => {
   try {
     // Check if the user exists
     let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({
+        message: "User is already exist with this email!",
+        success: false,
+      });
+    }
 
     if (!user) {
       // Create a temporary user for OTP verification
@@ -56,7 +62,9 @@ export const verifyOtp = async (req, res) => {
     // Clear OTP after successful verification
     user.otp = null;
     user.otpExpiry = null;
-    await user.save();
+
+    //after verification temporary user deleted
+    await user.deleteOne({ email });
 
     res.status(200).json({ success: true, message: "OTP verified successfully" });
   } catch (error) {
