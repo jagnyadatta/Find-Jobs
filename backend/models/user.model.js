@@ -12,16 +12,16 @@ const userSchema = new mongoose.Schema(
     },
     phoneNumber: {
       type: Number,
-      required: true,
+      required: false,
     },
     password: {
       type: String,
-      required: true,
+      required: false,
     },
     role: {
       type: String,
       enum: ["student", "recruiter"],
-      required: true,
+      required: false,
     },
     profile: {
       bio: { type: String },
