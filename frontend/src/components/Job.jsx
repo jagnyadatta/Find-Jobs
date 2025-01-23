@@ -17,7 +17,7 @@ const Job = ({job}) => {
   }
 
   return (
-    <div className="p-5 rounded-md shadow-xl bg-white border border-gray-100">
+    <div className="p-2 sm:p-5 rounded-md shadow-xl bg-white border border-gray-100">
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-500">{daysAgoFunction(job?.createdAt) === 0 ? "Today" : `${daysAgoFunction(job?.createdAt)} days ago`}</p>
         <Button variant="outline" className="rounded-full">
@@ -26,37 +26,38 @@ const Job = ({job}) => {
       </div>
 
       <div className="flex items-center gap-2 my-2">
-        <Button className="p-6" variant="outline" size="icon">
+        <Button className="p-1 sm:p-6" variant="outline" size="icon">
           <Avatar>
             <AvatarImage src={job?.company?.logo} />
           </Avatar>
         </Button>
         <div>
-          <h1 className="font-medium text-lg">{job?.company?.name}</h1>
+          <h1 className="font-medium text-sm sm:text-lg">{job?.company?.name}</h1>
           <p className="text-sm text-gray-500">India</p>
         </div>
       </div>
 
       <div>
-        <h1 className="font-bold text-lg my-2">{job?.title}</h1>
+        <h1 className="font-bold tex-sm sm:text-lg my-2">{job?.title}</h1>
         <p className="text-sm text-gray-600">{job?.description}</p>
       </div>
 
-      <div className='flex items-center gap-2 mt-4'>
+      <div className='flex-row sm:flex-col items-center gap-2 mt-4'>
                 <Badge className={'text-blue-700 font-bold'} variant="ghost">{job?.position} Positions</Badge>
                 <Badge className={'text-[#04c40a] font-bold'} variant="ghost">{job?.jobType}</Badge>
                 <Badge className={'text-[#F83002] font-bold'} variant="ghost">{job?.salary}LPA</Badge>
       </div>
 
 
-      <div className="flex items-center gap-4 mt-4">
+      <div className="flex-row sm:flex-col items-center sm:gap-4 mt-4 ">
         <Button
           variant="outline"
           onClick={()=>navigate(`/description/${job?._id}`)}
+          className="w-[40%] sm:w-[30%] mr-1 p-1 text-xs sm:text-sm"
         >
           Details
         </Button>
-        <Button className="bg-[#7296a3]">Save For Later</Button>
+        <Button className="w-[60%] sm:w-[30%] bg-[#7296a3] text-xs sm:text-sm">Save For Later</Button>
       </div>
     </div>
   );

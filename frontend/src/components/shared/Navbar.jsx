@@ -41,7 +41,7 @@ const Navbar = () => {
           </h1> */}
         </div>
         <div className="flex items-center gap-12">
-          <ul className="flex font-medium items-center gap-5">
+          <ul className="hidden font-medium items-center gap-5 sm:flex">
             {user && user.role === "recruiter" ? (
               <>
                 <li>
@@ -68,10 +68,12 @@ const Navbar = () => {
           {!user ? (
             <div className="flex items-center gap-2">
               <Link to="/login">
-                <Button variant="outline">Login</Button>
+                <Button variant="outline" className="p-2 sm:p-4">
+                  Login
+                </Button>
               </Link>
               <Link to="/signup">
-                <Button className="bg-[#0279e8] hover:bg-[#055199] outline:none">
+                <Button className="bg-[#0279e8] hover:bg-[#055199] outline:none p-2 sm:p-4">
                   SignUp
                 </Button>
               </Link>
@@ -129,6 +131,32 @@ const Navbar = () => {
             </Popover>
           )}
         </div>
+      </div>
+      <div className="flex items-center justify-center">
+        <ul className="flex font-medium items-center gap-3 sm:hidden">
+          {user && user.role === "recruiter" ? (
+            <>
+              <li className="border-2 rounded-lg p-1 border-blue-500 hover:bg-slate-500 hover:text-white">
+                <Link to="/admin/companies">Companies</Link>
+              </li>
+              <li className="border-2 rounded-lg p-1 border-blue-500 hover:bg-slate-500 hover:text-white">
+                <Link to="/admin/jobs">Jobs</Link>
+              </li>
+            </>
+          ) : (
+            <>
+              <li className="border-2 rounded-lg p-1 border-blue-500 hover:bg-slate-500 hover:text-white">
+                <Link to="/">Home</Link>
+              </li>
+              <li className="border-2 rounded-lg p-1 border-blue-500 hover:bg-slate-500 hover:text-white">
+                <Link to="/jobs">Jobs</Link>
+              </li>
+              <li className="border-2 rounded-lg p-1 border-blue-500 hover:bg-slate-500 hover:text-white">
+                <Link to="/browse">Browse</Link>
+              </li>
+            </>
+          )}
+        </ul>
       </div>
     </div>
   );
