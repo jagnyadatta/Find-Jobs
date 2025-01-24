@@ -53,11 +53,11 @@ const Job = ({job}) => {
         <Button
           variant="outline"
           onClick={()=>navigate(`/description/${job?._id}`)}
-          className="w-[40%] sm:w-[30%] mr-1 p-1 text-xs sm:text-sm"
+          className="w-[40%] sm:w-[40%] mr-1 p-1 text-xs sm:text-sm"
         >
           Details
         </Button>
-        <Button className="w-[60%] sm:w-[30%] bg-[#7296a3] text-xs sm:text-sm">Save For Later</Button>
+        <Button className="w-[60%] sm:w-[45%] bg-[#7296a3] text-xs sm:text-sm">Save For Later</Button>
       </div>
     </div>
   );
