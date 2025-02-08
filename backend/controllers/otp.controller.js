@@ -48,7 +48,7 @@ export const verifyOtp = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res.status(404).json({ success: false, message: "Already OTP is Verified!" });
     }
 
     if (user.otp !== otp) {
@@ -67,6 +67,33 @@ export const verifyOtp = async (req, res) => {
     await user.deleteOne({ email });
 
     res.status(200).json({ success: true, message: "OTP verified successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
+// Resend OTP
+export const resendOtp = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      await User.deleteOne({ email }); // Delete the temporary user
+    }
+
+    const otp = generateOtp();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+    
+    const newUser = new User({ email, otp, otpExpiry });
+    await newUser.save();
+
+    const emailResponse = await sendOtpEmail(email, otp);
+    if (emailResponse.success) {
+      return res.status(200).json({ success: true, message: "OTP resent successfully" });
+    } else {
+      return res.status(500).json({ success: false, message: emailResponse.message });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Something went wrong" });

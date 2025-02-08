@@ -25,6 +25,9 @@ const Signup = () => {
   });
   const [isOTPRequested, setIsOTPRequested] = useState(false); // State to track OTP request
   const [isOTPVerified, setIsOTPVerified] = useState(false); // State to track OTP verification
+  const [resendCooldown, setResendCooldown] = useState(false);
+  const [countdown, setCountdown] = useState(60);
+
   const { loading, user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -54,9 +57,34 @@ const Signup = () => {
       
       if (otpRes.data.success) {
         setIsOTPRequested(true); // Mark OTP as requested
+        setResendCooldown(true);
+        setCountdown(60);
         toast.success("OTP sent to your email. Please check your inbox.");
       } else {
         toast.error("Failed to send OTP.");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "An error occurred.");
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+  //function for resend OTP
+  const resendOTPHandler = async (e) => {
+    e.preventDefault();
+    
+    try {
+      dispatch(setLoading(true));
+      const resendRes = await axios.post(`${OTP_API_END_POINT}/resend-otp`, { email: input.email });
+      if (resendRes.data.success) {
+        setIsOTPRequested(true);
+        setIsOTPVerified(false);
+        setResendCooldown(true);
+        setCountdown(60);
+        toast.success("New OTP sent successfully.");
+      } else {
+        toast.error("Failed to resend OTP.");
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "An error occurred.");
@@ -124,6 +152,24 @@ const Signup = () => {
     }
   };
 
+  //useEffect for resend otp timer
+  useEffect(() => {
+    let timer;
+    if (resendCooldown) {
+      timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev === 1) {
+            clearInterval(timer);
+            setResendCooldown(false);
+            return 60;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
+
   useEffect(() => {
     if (user) {
       navigate("/");
@@ -162,15 +208,46 @@ const Signup = () => {
                 placeholder="demo123@gmail.com"
                 className="flex-1"
               />
-              <Button
+              {/* <Button
                 type="button"
                 onClick={sendOTPHandler}
                 className="ml-2 bg-blue-600 text-white"
+                disabled={isOTPRequested}
               >
                 Send OTP
-              </Button>
+              </Button> */}
+
+              {isOTPRequested ? (
+                <div className="my-2 flex flex-col items-center">
+                  <Button
+                    type="button"
+                    onClick={resendOTPHandler}
+                    disabled={resendCooldown || isOTPVerified}
+                    className="ml-2 text-white bg-red-500 hover:bg-red-800 outline-none"
+                  >
+                    {!isOTPVerified && (loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> :"")}Resend
+                  </Button>
+
+                </div>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={sendOTPHandler}
+                  className="ml-2 bg-blue-600 text-white"
+                  disabled={isOTPRequested}
+                >
+                  {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> :"Send OTP"}
+                </Button>
+              )}
             </div>
           </div>
+
+          {resendCooldown && (isOTPRequested && (
+            <p className="text-gray-600 text-sm mt-1 ">
+              You can request a new OTP in <span className="text-red-600 font-semibold">{countdown}</span> seconds.
+            </p>
+          ))}
+
 
           {isOTPRequested && (
             <div className="my-2">
@@ -187,7 +264,10 @@ const Signup = () => {
                 <Button
                   type="button"
                   onClick={verifyOTPHandler}
-                  className="ml-2 bg-green-600 text-white"
+                  className={`ml-2 bg-green-600 text-white ${
+                    isOTPVerified ? "cursor-not-allowed" : "bg-green-700"
+                  } `}
+                  disabled={isOTPVerified}
                 >
                   Verify OTP
                 </Button>
@@ -255,7 +335,7 @@ const Signup = () => {
             </>
           )}
 
-          {loading ? (
+          {isOTPVerified && (loading ? (
             <Button className="w-full my-4 bg-[#04c40a] hover:bg-[#2a8212] outline:none">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait !
             </Button>
@@ -266,7 +346,7 @@ const Signup = () => {
             >
               Signup
             </Button>
-          )}
+          ))}
 
           <span className="text-sm">
             Already have an account?{" "}
@@ -276,7 +356,7 @@ const Signup = () => {
           </span>
         </form>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 };
