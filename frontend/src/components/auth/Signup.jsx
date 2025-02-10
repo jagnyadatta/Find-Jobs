@@ -203,6 +203,7 @@ const Signup = () => {
               <Input
                 type="email"
                 value={input.email}
+                disabled={isOTPVerified}
                 name="email"
                 onChange={changeEventHandler}
                 placeholder="demo123@gmail.com"
@@ -242,11 +243,11 @@ const Signup = () => {
             </div>
           </div>
 
-          {resendCooldown && (isOTPRequested && (
+          {!isOTPVerified && (resendCooldown && (isOTPRequested && (
             <p className="text-gray-600 text-sm mt-1 ">
               You can request a new OTP in <span className="text-red-600 font-semibold">{countdown}</span> seconds.
             </p>
-          ))}
+          )))}
 
 
           {isOTPRequested && (
