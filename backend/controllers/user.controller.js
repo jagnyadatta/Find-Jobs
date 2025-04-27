@@ -33,6 +33,16 @@ export const register = async (req, res) => {
         success: false,
       });
     }
+    
+    // Check if phone number already exists
+    const existingUserByPhone = await User.findOne({ phoneNumber });
+    if (existingUserByPhone) {
+      return res.status(400).json({
+        message: "Phone number already registered!",
+        success: false,
+      });
+    }
+
     const hashedPassoword = await bcrypt.hash(password, 10);
     await User.create({
       fullname,
